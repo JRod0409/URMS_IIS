@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'homebase.html' %}
 
 {% load static %}
 
@@ -6,39 +6,79 @@
 
 {% block content %}
 
-<div class="container mt-5">
+<style>
+.top-song-this-week {
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: row;
+    width: 100% !important;
+    height: auto;
+    padding-left: 9%;
+    padding-right: 9%;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
 
-    <!-- Top Song Section -->
-    <div class="row">
-        <div class="col-md-8">
-            <h2>Top Song This Week</h2>
+.top-song-this-week-left {
+    width: 50% !important;
+    display: flex;
+    justify-content: center;
+}
+
+.top-song-this-week-right {
+    margin: 0 auto;
+    padding: 0px;
+    width: 50%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.second-bg {
+    background-color: #C3c3c3;
+}
+
+</style>
+
+
+    <div class="top-song-this-week">
+        <div class="top-song-this-week-left">
+        
+    <div class="row" style="height: auto; padding-top: 10%; padding-bottom: 10%; width: 75%;">
+        <div>
+            <h2 style="font-size: 2.2em; margin-left: 0px;">Top Song This Week</h2>
             {% if top_song %}
-                <h3>{{ top_song.title }}</h3>
-                <p><strong>Artist:</strong> {{ top_song.artist.name }}</p>
-                <p><strong>Genre:</strong> {{ top_song.genre }}</p>
-                <p><strong>Release Date:</strong> {{ top_song.releaseDate }}</p>
+                <p style="margin: 0px;"><strong>Title:</strong> {{ top_song.title }}</p>
+                <p style="margin: 0px;"><strong>Artist:</strong> {{ top_song.artist.name }}</p>
                 <p><strong>Score:</strong> {{ top_song.currentRating }} ⭐</p>
             {% else %}
                 <p>No top song available this week.</p>
             {% endif %}
         </div>
-        <div class="col-md-4 text-center">
-            {% if top_song and top_song.album_art_url %}
-                <img src="{{ top_song.album_art_url }}" alt="Album Art" class="img-fluid rounded">
-            {% else %}
-                <img src="{% static 'default_album_art.jpg' %}" alt="Album Art" class="img-fluid rounded">
-            {% endif %}
+         <!-- Action Buttons -->
+        <div style="flex-direction: row;">
+            <div>
+                <a href="#" class="btn" style="background-color: #252525; color: #ffffff; width: 15%;"><strong>View</strong></a>
+                <a href="#" class="btn" style="background-color: #c3c3c3; color: #252525; width: 15%;"><strong>Rate</strong></a>
+            </div>
         </div>
+        
+    </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="row mt-3">
-        <div class="col-md-12 text-center">
-            <a href="{{ top_song.title }}" class="btn btn-primary btn-lg mx-2">View</a>
-            <a href="{{ top_song.title }}" class="btn btn-warning btn-lg mx-2">Rate</a>
-        </div>
+    
+    <div class="top-song-this-week-right">
+        {% if top_song and top_song.album_art_url %}
+            <img src="{{ top_song.album_art_url }}" alt="Album Art" style="width: 50% !important; height: auto !important;" class="img-fluid rounded top-song-this-week-right-img">
+        {% else %}
+            <img src="{% static 'default_album_art.jpg' %}" alt="Album Art" class="img-fluid rounded top-song-this-week-right-img">
+        {% endif %}
+    </div>
     </div>
 
+    <div class="second-bg">
+
+    <div class="container mt-5">
     <!-- Top 25 Songs Section -->
     <h1 class="mb-4 text-center">Top 25 Songs</h1>
     <div class="text-center mb-3">
@@ -71,7 +111,7 @@
         </div>
         {% endfor %}
     </div>
-
+    </div>
     <!-- Popup Form (optional for artist details) -->
     <div class="form-popup" id="artistPopup">
         <div class="form-inputs-container">
@@ -85,6 +125,7 @@
         <div class="form-buttons-container">
             <button type="button" class="btn btn-secondary" onclick="closeForm()">Close</button>
         </div>
+    </div>
     </div>
 
     <script>
@@ -121,7 +162,6 @@
         window.location.href = `?sort=${selectedSort}`;
     });
     </script>
-</div>
 {% endblock %}
 </div>
 </body>

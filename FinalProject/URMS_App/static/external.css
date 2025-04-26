@@ -61,3 +61,32 @@ color: #6c6c6c;
 .custom_navbar_css {
 background-color: #252525;
 }
+
+.top-song-this-week {
+    background-color: #d3d3d3;
+    display: flex;
+    flex-direction: row;
+    width: 100% !important;
+    height: auto;
+    padding-left: 9%;
+    padding-right: 9%;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.top-song-this-week-left {
+    display: flex;
+    width: 50% !important;
+}
+
+.top-song-this-week-right {
+    margin: 0 auto;
+    padding: 0px;
+    width: 50% !important;
+}
+
+.top-song-this-week-right img {
+    width: 50% !important;
+    margin: 0 auto;
+    padding: 0px;
+}
