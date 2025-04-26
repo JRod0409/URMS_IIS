@@ -1,88 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Top 25 Songs</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% extends 'base.html' %}
 
-<style>
-    .card-body p{
-        margin: 0 auto;
-        width: 20%;
-        text-align: left;
-    }
-    /* The popup form - hidden by default */
-.form-popup {
-	display: none;
-	bottom: 0;
-	right: 15px;
-	z-index: 9;
-	max-width: 30% !important;
-	height: 70%;
-	border-radius: 1em;
-	margin: 0;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	-ms-transform: translate(-50%, -50%);
-	transform: translate(-50%, -50%);
-	border: solid .5px #D2D2D2;
-	position: sticky;
-	position:fixed;
-    background-color: #F2F2F2;
-    padding: 2.5%;
-}
-.post-form-inputs-container {
-	height: 55%;
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	margin-top: 5%;
-}
+{% block title %}Home{% endblock %}
 
-.post-form-inputs-container > * {
-	padding-bottom: 1%;
-}
-
-.post-form-buttons-container {
-	display: flex;
-	flex-direction: row;
-	width: 90% !important;
-	margin: 0 auto;
-	margin-top: 4%;
-	height: 15%;
-}
-</style>
-
-</head>
-<body>
-
-<!--Top navigation bar-->
-<nav class="navbar navbar-expand-sm bg-light">
-    <div class="container-fluid">
-        <form method="post" class="d-flex w-100">
-            {% csrf_token %}
-            <ul class="navbar-nav">
-                <span class="p-2">
-                    <button type="submit" name="home" class="btn btn-danger btn-lg">HOME</button>
-                </span>
-                <span class="p-2">
-                    <button type="submit" name="login" class="btn btn-danger btn-lg">LOGIN</button>
-                </span>
-                <span class="p-2">
-                    <button type="submit" name="profile" class="btn btn-danger btn-lg">PROFILE</button>
-                </span>
-            </ul>
-
-            {% if userLogedIn %}
-            <span class="p-2 ms-auto">
-                <button type="submit" name="logout" class="btn btn-danger btn-lg">LOG OUT</button>
-            </span>
-            {% endif %}
-        </form>
-    </div>
-</nav>
+{% block content %}
 
 <div class="container mt-5">
 <h1 class="mb-4 text-center">Top 25 Songs</h1>
@@ -173,6 +93,8 @@ document.getElementById('sortSelect').addEventListener('change', function() {
     window.location.href = `?sort=${selectedSort}`;
 });
 </script>
+
+{% endblock %}
 </div>
 </body>
 </html>
