@@ -83,25 +83,27 @@ class Admin(User):
     
 
 class Artists(models.Model):
-    name=models.CharField(max_length=32)
-    birthplace=models.CharField(max_length=64)
-    artist_fact=models.TextField()
-    spouse=models.CharField(max_length=32)
+    name = models.CharField(max_length=255)
+    birthplace = models.CharField(max_length=255, blank=True, null=True)
+    artist_fact = models.TextField(blank=True, null=True)
+    spouse = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.name
-    
-
 
 class Song(models.Model):
-    title = models.CharField(max_length=127)
-    album = models.CharField(max_length=127)
-    artist = models.ForeignKey(Artists, on_delete=models.CASCADE, null=True, blank=True)  # Link to Artists model
+    title = models.CharField(max_length=255)
+    album = models.CharField(max_length=255)
+    artist = models.ForeignKey(Artists, on_delete=models.CASCADE)
     releaseDate = models.DateField()
-    dateAdded = models.DateField()
-    currentRating = models.DecimalField(decimal_places=1, max_digits=2)
-    totalVotes = models.IntegerField()
-    genre = models.CharField(max_length=127, null="None")
+    dateAdded = models.DateField(auto_now_add=True)
+    currentRating = models.FloatField(default=0)
+    totalVotes = models.IntegerField(default=0)
+    genre = models.CharField(max_length=255, blank=True, null=True)
+    album_art_url = models.URLField(max_length=500, blank=True, null=True)  # <-- NEW FIELD
+
+    def __str__(self):
+        return f"{self.title} by {self.artist.name}"
 
 
     def RateSong(self, rating):

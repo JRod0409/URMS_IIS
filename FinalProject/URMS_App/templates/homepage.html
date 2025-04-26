@@ -1,99 +1,127 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Home{% endblock %}
 
 {% block content %}
 
 <div class="container mt-5">
-<h1 class="mb-4 text-center">Top 25 Songs</h1>
-<!-- Sort Dropdown -->
-<div class="text-center mb-3">
-    <label for="sortSelect"><strong>Sort By:</strong></label>
-    <select id="sortSelect" class="form-select w-auto d-inline-block">
-        <option value="title" {% if current_sort == "title" %}selected{% endif %}>Title</option>
-        <option value="artist" {% if current_sort == "artist" %}selected{% endif %}>Artist</option>
-        <option value="genre" {% if current_sort == "genre" %}selected{% endif %}>Genre</option>
-        <option value="currentRating" {% if current_sort == "currentRating" %}selected{% endif %}>Score</option>
-        <option value="releaseDate" {% if current_sort == "releaseDate" %}selected{% endif %}>Release Date</option>
-    </select>
-</div>
-<div class="row">
-    {% for song in song %}
-    <div class="col-md-12">
-        <div class="card mb-4 shadow-sm song-card" data-artist="{{ song.artist.name }}" data-birthplace="{{ song.artist.birthplace }}" data-spouse="{{ song.artist.spouse }}" data-fact="{{ song.artist.artist_fact }}">
-            <div class="card-body" style="display:flex; cursor: pointer;">
-                <p class="card-text"><strong>Title:</strong> {{ song.title }}</p>
-                <p class="card-text"><strong>Artist:</strong> {{ song.artist.name }}</p>
-                <p><strong>Genre:</strong> {{ song.genre }}</p>
-                <p><strong>Release Year:</strong> {{ song.releaseDate }}</p>
-                <p><strong>Score:</strong> {{ song.currentRating }} ⭐</p>
-            </div>
+
+    <!-- Top Song Section -->
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Top Song This Week</h2>
+            {% if top_song %}
+                <h3>{{ top_song.title }}</h3>
+                <p><strong>Artist:</strong> {{ top_song.artist.name }}</p>
+                <p><strong>Genre:</strong> {{ top_song.genre }}</p>
+                <p><strong>Release Date:</strong> {{ top_song.releaseDate }}</p>
+                <p><strong>Score:</strong> {{ top_song.currentRating }} ⭐</p>
+            {% else %}
+                <p>No top song available this week.</p>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-center">
+            {% if top_song and top_song.album_art_url %}
+                <img src="{{ top_song.album_art_url }}" alt="Album Art" class="img-fluid rounded">
+            {% else %}
+                <img src="{% static 'default_album_art.jpg' %}" alt="Album Art" class="img-fluid rounded">
+            {% endif %}
         </div>
     </div>
-    {% empty %}
-    <div class="col-12 text-center">
-        <p>No songs available.</p>
+
+    <!-- Action Buttons -->
+    <div class="row mt-3">
+        <div class="col-md-12 text-center">
+            <a href="{{ top_song.title }}" class="btn btn-primary btn-lg mx-2">View</a>
+            <a href="{{ top_song.title }}" class="btn btn-warning btn-lg mx-2">Rate</a>
+        </div>
     </div>
-    {% endfor %}
-</div>
 
-<!-- Popup Form -->
-<div class="form-popup" id="artistPopup">
-    <div class="form-inputs-container">
-        <p><b>Artist: </b><span id="popupArtist"></span></p>
-        <p><b>Birthplace: </b><span id="popupBirthplace"></span></p>
-        <p><b>Spouse: </b><span id="popupSpouse"></span></p>
-        <p><b>Artist Fact: </b><span id="popupFact"></span></p>
-
-        <!-- This is where the artists other works will show up if they are in the DB -->
-         <p><b>Other songs by this artist:</b></p>
-         <ul id="popupSongsList"></ul>
+    <!-- Top 25 Songs Section -->
+    <h1 class="mb-4 text-center">Top 25 Songs</h1>
+    <div class="text-center mb-3">
+        <label for="sortSelect"><strong>Sort By:</strong></label>
+        <select id="sortSelect" class="form-select w-auto d-inline-block">
+            <option value="title" {% if current_sort == "title" %}selected{% endif %}>Title</option>
+            <option value="artist" {% if current_sort == "artist" %}selected{% endif %}>Artist</option>
+            <option value="genre" {% if current_sort == "genre" %}selected{% endif %}>Genre</option>
+            <option value="currentRating" {% if current_sort == "currentRating" %}selected{% endif %}>Score</option>
+            <option value="releaseDate" {% if current_sort == "releaseDate" %}selected{% endif %}>Release Date</option>
+        </select>
     </div>
-    <div class="form-buttons-container">
-        <button type="button" class="btn btn-secondary" onclick="closeForm()">Close</button>
+
+    <div class="row">
+        {% for song in song %}
+        <div class="col-md-12">
+            <div class="card mb-4 shadow-sm song-card" data-artist="{{ song.artist.name }}" data-birthplace="{{ song.artist.birthplace }}" data-spouse="{{ song.artist.spouse }}" data-fact="{{ song.artist.artist_fact }}">
+                <div class="card-body" style="display:flex; cursor: pointer;">
+                    <p class="card-text"><strong>Title:</strong> {{ song.title }}</p>
+                    <p class="card-text"><strong>Artist:</strong> {{ song.artist.name }}</p>
+                    <p><strong>Genre:</strong> {{ song.genre }}</p>
+                    <p><strong>Release Year:</strong> {{ song.releaseDate }}</p>
+                    <p><strong>Score:</strong> {{ song.currentRating }} ⭐</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p>No songs available.</p>
+        </div>
+        {% endfor %}
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.querySelectorAll('.song-card').forEach(card => {
-    card.addEventListener('click', function() {
-        // Get artist details from data attributes
-        const artistName = this.getAttribute('data-artist');
-        document.getElementById('popupArtist').textContent = artistName;
-        document.getElementById('popupBirthplace').textContent = this.getAttribute('data-birthplace');
-        document.getElementById('popupSpouse').textContent = this.getAttribute('data-spouse');
-        document.getElementById('popupFact').textContent = this.getAttribute('data-fact');
+    <!-- Popup Form (optional for artist details) -->
+    <div class="form-popup" id="artistPopup">
+        <div class="form-inputs-container">
+            <p><b>Artist: </b><span id="popupArtist"></span></p>
+            <p><b>Birthplace: </b><span id="popupBirthplace"></span></p>
+            <p><b>Spouse: </b><span id="popupSpouse"></span></p>
+            <p><b>Artist Fact: </b><span id="popupFact"></span></p>
+            <p><b>Other songs by this artist:</b></p>
+            <ul id="popupSongsList"></ul>
+        </div>
+        <div class="form-buttons-container">
+            <button type="button" class="btn btn-secondary" onclick="closeForm()">Close</button>
+        </div>
+    </div>
 
-        // Clear previous song list
-        const songList = document.getElementById('popupSongsList');
-        songList.innerHTML = "";
+    <script>
+        document.querySelectorAll('.song-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const artistName = this.getAttribute('data-artist');
+            document.getElementById('popupArtist').textContent = artistName;
+            document.getElementById('popupBirthplace').textContent = this.getAttribute('data-birthplace');
+            document.getElementById('popupSpouse').textContent = this.getAttribute('data-spouse');
+            document.getElementById('popupFact').textContent = this.getAttribute('data-fact');
 
-        // Find all songs in the document that match the same artist
-        document.querySelectorAll('.song-card').forEach(otherCard => {
-            if (otherCard.getAttribute('data-artist') === artistName) {
-                const songTitle = otherCard.querySelector('.card-text strong').nextSibling.nodeValue.trim();
-                const listItem = document.createElement('li');
-                listItem.textContent = songTitle;
-                songList.appendChild(listItem);
-            }
+            const songList = document.getElementById('popupSongsList');
+            songList.innerHTML = "";
+
+            document.querySelectorAll('.song-card').forEach(otherCard => {
+                if (otherCard.getAttribute('data-artist') === artistName) {
+                    const songTitle = otherCard.querySelector('.card-text strong').nextSibling.nodeValue.trim();
+                    const listItem = document.createElement('li');
+                    listItem.textContent = songTitle;
+                    songList.appendChild(listItem);
+                }
+            });
+
+            document.getElementById('artistPopup').style.display = "block";
         });
-
-        // Show the popup
-        document.getElementById('artistPopup').style.display = "block";
     });
-});
 
-function closeForm() {
-    document.getElementById('artistPopup').style.display = "none";
-}
+    function closeForm() {
+        document.getElementById('artistPopup').style.display = "none";
+    }
 
-document.getElementById('sortSelect').addEventListener('change', function() {
-    const selectedSort = this.value;
-    window.location.href = `?sort=${selectedSort}`;
-});
-</script>
-
+    document.getElementById('sortSelect').addEventListener('change', function() {
+        const selectedSort = this.value;
+        window.location.href = `?sort=${selectedSort}`;
+    });
+    </script>
+</div>
 {% endblock %}
 </div>
 </body>

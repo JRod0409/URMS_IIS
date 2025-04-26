@@ -1,6 +1,7 @@
 from django.http import HttpResponse
-from django.shortcuts import render, loader, redirect
+from django.shortcuts import render, loader, redirect, redirect
 from django.urls import reverse
+from datetime import datetime, timedelta
 from .models import User,Admin,Song
 #from .forms import ImageUploadForm
 
@@ -37,11 +38,19 @@ def HomePage(request):
         if "login" in request.POST:
             return redirect("/login/")
 
+    # Get the current date and the start of the week (Monday)
+    today = datetime.now()
+    start_of_week = today - timedelta(days=today.weekday())  # Monday of the current week
 
-    template = loader.get_template("homepage.html")
-    context = {"userLogedIn":userLogedIn}
-    return HttpResponse(template.render(context, request))
+    # Fetch the top song of the week based on rating
+    top_song = Song.objects.filter(dateAdded__gte=start_of_week).order_by('-currentRating').first()
 
+    context = {
+        "userLogedIn": userLogedIn,
+        "top_song": top_song,
+    }
+
+    return render(request, "homepage.html", context)
 
 def NewHomePage(request):
 
