@@ -80,14 +80,28 @@ class Admin(User):
     def __str__(self):
         return "ADMIN USER - ID:" + str(self.userID) + ", Username: " + str(self.username)
     
+    
+
+class Artists(models.Model):
+    name=models.CharField(max_length=32)
+    birthplace=models.CharField(max_length=64)
+    artist_fact=models.TextField()
+    spouse=models.CharField(max_length=32)
+
+    def __str__(self):
+        return self.name
+    
+
 
 class Song(models.Model):
     title = models.CharField(max_length=127)
     album = models.CharField(max_length=127)
+    artist = models.ForeignKey(Artists, on_delete=models.CASCADE, null=True, blank=True)  # Link to Artists model
     releaseDate = models.DateField()
     dateAdded = models.DateField()
     currentRating = models.DecimalField(decimal_places=1, max_digits=2)
     totalVotes = models.IntegerField()
+    genre = models.CharField(max_length=127, null="None")
 
 
     def RateSong(self, rating):
@@ -95,4 +109,4 @@ class Song(models.Model):
 
 
     def __str__(self):
-        return self.title + " - " + str(self.album) + " Rateing: " + str(self.currentRating)
+        return self.title + " - " + str(self.album) + " Rating: " + str(self.currentRating)

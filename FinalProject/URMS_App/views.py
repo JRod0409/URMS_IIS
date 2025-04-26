@@ -43,6 +43,62 @@ def HomePage(request):
     return HttpResponse(template.render(context, request))
 
 
+def NewHomePage(request):
+
+    userLogedIn = False
+
+    #if path is empty, send to home page
+    if request.path == "/":
+        return redirect("/home/")
+    
+
+    if request.session.get("loggedUser"):
+        userLogedIn = True
+
+
+    if request.method == "POST":
+
+        if "logout" in request.POST:
+            request.session["loggedUser"] = ""
+            return redirect("/home/")
+        
+        if "profile" in request.POST:
+            if userLogedIn:
+
+                username = request.session.get("loggedUser")
+                userModel = User.objects.get(username=username)
+                return redirect(f"/profile/?user={userModel.username}")
+            
+            else:
+                return redirect("/login/")
+        
+        if "login" in request.POST:
+            return redirect("/login/")
+        
+
+    sort_by = request.GET.get('sort', 'title')  # Default sort by title
+
+    # Define allowed sorting fields
+    valid_sorts = {
+        'artist': 'artist__name',
+        'genre': 'genre',
+        'currentRating': '-currentRating',  # Descending order (highest score first)
+        'releaseDate': 'releaseDate'  # Descending order (newest first)
+    }
+
+    # Get the actual field name for sorting
+    sort_field = valid_sorts.get(sort_by, 'title')
+
+    # Query the database with sorting
+    songs = Song.objects.all().order_by(sort_field)
+
+    context = {"userLogedIn":userLogedIn}
+
+    template = loader.get_template("homepage.html")
+    context = {"userLogedIn":userLogedIn, "song": songs, "current_sort": sort_by}
+    return HttpResponse(template.render(context, request))
+
+
 def LogInPage(request):
 
     userLogedIn = False
