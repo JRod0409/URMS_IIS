@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rate an Artist</title>
+</head>
+<body>
+    <h1>Rate an Artist</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="artist">Select Artist:</label>
+        <select name="artist">
+            {% for artist in artists %}
+            <option value="{{ artist.id }}">{{ artist.name }}</option>
+            {% endfor %}
+        </select>
+        <label for="score">Rating (1-5):</label>
+        <input type="number" name="score" min="1" max="5" required>
+        <button type="submit">Submit</button>
+    </form>
+    <a href="{% url 'leaderboard' %}">Back to Leaderboard</a>
+</body>
+</html>

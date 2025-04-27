@@ -57,15 +57,19 @@ def HomePage(request):
     return render(request, "homepage.html", context)
 
 def NewHomePage(request):
-    userLogedIn = False
 
     if request.path == "/":
         return redirect("/home/")
 
+    userLogedIn = False
     if request.session.get("loggedUser"):
         userLogedIn = True
 
     if request.method == "POST":
+
+        #POST reference for debug
+        print("Current POST: " + str(request.POST))
+
         if "logout" in request.POST:
             request.session["loggedUser"] = ""
             return redirect("/home/")
@@ -83,6 +87,7 @@ def NewHomePage(request):
         
         if "browse" in request.POST:
             return redirect("/browse/")
+        
 
     sort_by = request.GET.get('sort', 'title')  # Default sort by title
     valid_sorts = {
@@ -316,6 +321,8 @@ def RateSongPage(request, song_id):
     username = request.session.get("loggedUser")
     if not username:
         return redirect("/login/")
+    
+    songLineup = request.session.get("inSongLineup")
 
     song = get_object_or_404(Song, id=song_id)
 
