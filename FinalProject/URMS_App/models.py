@@ -101,6 +101,7 @@ class Song(models.Model):
     totalVotes = models.IntegerField(default=0)
     genre = models.CharField(max_length=255, blank=True, null=True)
     album_art_url = models.URLField(max_length=1000, blank=True, null=True)  # <-- NEW FIELD
+    spotify_url = models.URLField(max_length=1000, blank=True, null=True)  # <-- Imbedded Spotify Link
 
     def __str__(self):
         return f"{self.title} by {self.artist.name}"
