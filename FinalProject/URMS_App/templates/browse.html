@@ -40,45 +40,7 @@
 
 </style>
 
-
-    <div class="top-song-this-week">
-        <div class="top-song-this-week-left">
-        
-    <div class="row" style="height: auto; padding-top: 10%; padding-bottom: 10%; width: 75%;">
-        <div>
-            <h2 style="font-size: 2.2em; margin-left: 0px;">Top Song This Week</h2>
-            {% if top_song %}
-                <p style="margin: 0px;"><strong>Title:</strong> {{ top_song.title }}</p>
-                <p style="margin: 0px;"><strong>Artist:</strong> {{ top_song.artist.name }}</p>
-                <p><strong>Score:</strong> {{ top_song.currentRating }} ⭐</p>
-            {% else %}
-                <p>No top song available this week.</p>
-            {% endif %}
-        </div>
-         <!-- Action Buttons -->
-        <div style="flex-direction: row;">
-            <div>
-                <a href="#" class="btn" style="background-color: #252525; color: #ffffff; width: 15%;"><strong>View</strong></a>
-                <a href="{% url 'rate_song' top_song.id %}" class="btn" style="background-color: #c3c3c3; color: #252525; width: 15%;"><strong>Rate</strong></a>
-            </div>
-        </div>
-        
-    </div>
-    </div>
-
-    
-    <div class="top-song-this-week-right">
-        {% if top_song and top_song.album_art_url %}
-            <img src="{{ top_song.album_art_url }}" alt="Album Art" style="width: 50% !important; height: auto !important;" class="img-fluid rounded top-song-this-week-right-img">
-        {% else %}
-            <img src="{% static 'default_album_art.jpg' %}" alt="Album Art" class="img-fluid rounded top-song-this-week-right-img">
-        {% endif %}
-    </div>
-    </div>
-
-    <div class="second-bg">
-
-    <div class="container">
+    <div class="container mt-5">
     <!-- Top 25 Songs Section -->
     <h1 class="mb-4 text-center">Top 25 Songs</h1>
     <div class="text-center mb-3">
@@ -102,10 +64,6 @@
                     <p><strong>Genre:</strong> {{ song.genre }}</p>
                     <p><strong>Release Year:</strong> {{ song.releaseDate }}</p>
                     <p><strong>Score:</strong> {{ song.currentRating }} ⭐</p>
-
-                    <div onclick="event.stopPropagation();" class="mt-2 text-center">
-                        <a href="{% url 'rate_song' song.id %}" class="btn btn-primary btn-sm">Rate This Song</a>
-                    </div>
                 </div>
             </div>
         </div>
