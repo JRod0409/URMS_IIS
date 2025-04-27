@@ -30,4 +30,5 @@ urlpatterns = [
     path('profile/', include('URMS_App.urls')),
     path('signup/', include('URMS_App.urls')),
     path('edit/', include('URMS_App.urls')),
+    path('browse/', include('URMS_App.urls')),
 ]

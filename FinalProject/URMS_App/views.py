@@ -38,6 +38,9 @@ def HomePage(request):
         
         if "login" in request.POST:
             return redirect("/login/")
+        
+        if "browse" in request.POST:
+            return redirect("/browse/")
 
     # Get the current date and the start of the week (Monday)
     today = datetime.now()
@@ -77,6 +80,9 @@ def NewHomePage(request):
         
         if "login" in request.POST:
             return redirect("/login/")
+        
+        if "browse" in request.POST:
+            return redirect("/browse/")
 
     sort_by = request.GET.get('sort', 'title')  # Default sort by title
     valid_sorts = {
@@ -129,7 +135,10 @@ def LogInPage(request):
 
         #If signup button is pushed
         if "signup" in request.POST:
-            return redirect("/signup/")        
+            return redirect("/signup/")
+
+        if "browse" in request.POST:
+            return redirect("/browse/")  
 
 
         username = request.POST.get("username")
@@ -180,7 +189,8 @@ def SignUpPage(request):
 
             return redirect("login")
 
-            
+        if "browse" in request.POST:
+            return redirect("/browse/")
         
 
     template = loader.get_template("signup.html")
@@ -219,6 +229,8 @@ def EditProfilePage(request):
             request.session["loggedUser"] = ""
             return redirect("/home/")
 
+        if "browse" in request.POST:
+            return redirect("/browse/")
 
         if "saveprofile" in request.POST:
 
@@ -276,6 +288,9 @@ def ProfilePage(request):
 
         if "editprofile" in request.POST:
             return redirect("edit/?user=" + username)
+        
+        if "browse" in request.POST:
+            return redirect("/browse/")
 
 
     template = loader.get_template("profile.html")
@@ -304,5 +319,61 @@ def RateSongPage(request, song_id):
     context = {
         "song": song,
         "username": username,
+    }
+    return HttpResponse(template.render(context, request))
+
+def Browse(request):
+    userLogedIn = False
+
+    if request.path == "/":
+        return redirect("/home/")
+
+    if request.session.get("loggedUser"):
+        userLogedIn = True
+
+    if request.method == "POST":
+        if "logout" in request.POST:
+            request.session["loggedUser"] = ""
+            return redirect("/home/")
+        
+        if "profile" in request.POST:
+            if userLogedIn:
+                username = request.session.get("loggedUser")
+                userModel = User.objects.get(username=username)
+                return redirect(f"/profile/?user={userModel.username}")
+            else:
+                return redirect("/login/")
+        
+        if "login" in request.POST:
+            return redirect("/login/")
+        
+        if "browse" in request.POST:
+            return redirect("/browse/")
+        
+        if "home" in request.POST:
+            return redirect("/home/")
+
+    sort_by = request.GET.get('sort', 'title')  # Default sort by title
+    valid_sorts = {
+        'artist': 'artist__name',
+        'genre': 'genre',
+        'currentRating': '-currentRating',  
+        'releaseDate': 'releaseDate'
+    }
+    sort_field = valid_sorts.get(sort_by, 'title')
+
+    songs = Song.objects.all().order_by(sort_field)
+
+    # 🛠️ New: fetch top song like in HomePage
+    today = datetime.now()
+    start_of_week = today - timedelta(days=today.weekday())
+    top_song = Song.objects.filter(dateAdded__gte=start_of_week).order_by('-currentRating').first()
+
+    template = loader.get_template("browse.html")
+    context = {
+        "userLogedIn": userLogedIn,
+        "song": songs,
+        "current_sort": sort_by,
+        "top_song": top_song,  # 🛠️ Pass top_song to template
     }
     return HttpResponse(template.render(context, request))
