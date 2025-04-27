@@ -40,6 +40,7 @@ class User(models.Model):
             super().save(*args, **kwargs)
 
 
+
 class UploadedImage(models.Model):
     image = models.ImageField(upload_to="uploads/")  # Path inside MEDIA_ROOT
 
