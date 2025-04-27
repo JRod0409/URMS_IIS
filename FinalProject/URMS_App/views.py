@@ -112,7 +112,7 @@ def NewHomePage(request):
 
 
 def LogInPage(request):
-
+    
     userLogedIn = False
     error = ""
 
@@ -202,6 +202,14 @@ def SignUpPage(request):
 
 def EditProfilePage(request):
 
+    userLogedIn = False
+
+    if request.path == "/":
+        return redirect("/home/")
+
+    if request.session.get("loggedUser"):
+        userLogedIn = True
+
     username = request.session.get("loggedUser")
     userModel = User.objects.get(username=username)
 
@@ -233,18 +241,7 @@ def EditProfilePage(request):
             return redirect("/browse/")
 
         if "saveprofile" in request.POST:
-
-            newUsername = request.POST.get("username")
             newEmail = request.POST.get("email")
-
-            if userModel.username != newUsername:
-
-                #check if username is taken
-                if User.objects.filter(username=newUsername):
-                    error = "Username already exists."
-                else:
-                    userModel.username = newUsername
-                    userModel.save()
 
             if userModel.email != newEmail:
                 userModel.email = newEmail
@@ -254,12 +251,20 @@ def EditProfilePage(request):
 
         
     template = loader.get_template("editprofile.html")
-    context = {"username":userModel.username, "userEmail":userModel.email, "userModel":userModel, "error":error}
+    context = {"username":userModel.username, "userEmail":userModel.email, "userModel":userModel, "error":error, "userLogedIn": userLogedIn,}
     return HttpResponse(template.render(context, request))
 
 
 
 def ProfilePage(request):
+
+    userLogedIn = False
+
+    if request.path == "/":
+        return redirect("/home/")
+
+    if request.session.get("loggedUser"):
+        userLogedIn = True
 
     username = request.session.get("loggedUser")
     userModel = User.objects.get(username=username)
@@ -294,12 +299,20 @@ def ProfilePage(request):
 
 
     template = loader.get_template("profile.html")
-    context = {"username":username, "userEmail":userEmail, "userModel":userModel}
+    context = {"user": userModel, "userLogedIn": userLogedIn,}
     return HttpResponse(template.render(context, request))
 
 
 
 def RateSongPage(request, song_id):
+    userLogedIn = False
+
+    if request.path == "/":
+        return redirect("/home/")
+
+    if request.session.get("loggedUser"):
+        userLogedIn = True
+
     username = request.session.get("loggedUser")
     if not username:
         return redirect("/login/")
@@ -319,7 +332,8 @@ def RateSongPage(request, song_id):
     context = {
         "song": song,
         "username": username,
-        'spotify_url': song.spotify_url
+        'spotify_url': song.spotify_url,
+        "userLogedIn": userLogedIn,
     }
     return HttpResponse(template.render(context, request))
 

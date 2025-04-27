@@ -23,19 +23,19 @@
                 <span class="p-2">
                     <button type="submit" name="browse" class="btn btn-lg custom_css">BROWSE</button>
                 </span>
-                <span class="p-2">
-                    <button type="submit" name="login" class="btn btn-lg custom_css">LOGIN</button>
-                </span>
-                <span class="p-2">
-                    <button type="submit" name="profile" class="btn btn-lg custom_css">PROFILE</button>
-                </span>
             </ul>
 
             {% if userLogedIn %}
             <span class="p-2 ms-auto">
+                <button type="submit" name="profile" class="btn btn-lg custom_css" style="margin-right: 1em;">PROFILE</button>
                 <button type="submit" name="logout" class="btn btn-lg custom_css">LOG OUT</button>
             </span>
+            {% else %}
+            <span class="p-2 ms-auto">
+                <button type="submit" name="login" class="btn btn-lg custom_css">LOGIN</button>
+            </span>
             {% endif %}
+
         </form>
     </div>
 </nav>
