@@ -3,6 +3,7 @@ from django.shortcuts import render, loader, redirect, redirect
 from django.urls import reverse
 from datetime import datetime, timedelta
 from .models import User,Admin,Song
+from django.shortcuts import get_object_or_404
 #from .forms import ImageUploadForm
 
 
@@ -279,4 +280,29 @@ def ProfilePage(request):
 
     template = loader.get_template("profile.html")
     context = {"username":username, "userEmail":userEmail, "userModel":userModel}
+    return HttpResponse(template.render(context, request))
+
+
+
+def RateSongPage(request, song_id):
+    username = request.session.get("loggedUser")
+    if not username:
+        return redirect("/login/")
+
+    song = get_object_or_404(Song, id=song_id)
+
+    if request.method == "POST":
+        rating = request.POST.get('rating')
+        if rating:
+            rating = float(rating)
+            song.totalVotes += 1
+            song.currentRating = ((song.currentRating * (song.totalVotes - 1)) + rating) / song.totalVotes
+            song.save()
+            return redirect("/home/")
+
+    template = loader.get_template("rate_song.html")
+    context = {
+        "song": song,
+        "username": username,
+    }
     return HttpResponse(template.render(context, request))
