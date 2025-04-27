@@ -59,7 +59,7 @@
         <div style="flex-direction: row;">
             <div>
                 <a href="#" class="btn" style="background-color: #252525; color: #ffffff; width: 15%;"><strong>View</strong></a>
-                <a href="#" class="btn" style="background-color: #c3c3c3; color: #252525; width: 15%;"><strong>Rate</strong></a>
+                <a href="{% url 'rate_song' top_song.id %}" class="btn" style="background-color: #c3c3c3; color: #252525; width: 15%;"><strong>Rate</strong></a>
             </div>
         </div>
         
@@ -102,6 +102,10 @@
                     <p><strong>Genre:</strong> {{ song.genre }}</p>
                     <p><strong>Release Year:</strong> {{ song.releaseDate }}</p>
                     <p><strong>Score:</strong> {{ song.currentRating }} ⭐</p>
+
+                    <div onclick="event.stopPropagation();" class="mt-2 text-center">
+                        <a href="{% url 'rate_song' song.id %}" class="btn btn-primary btn-sm">Rate This Song</a>
+                    </div>
                 </div>
             </div>
         </div>
