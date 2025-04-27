@@ -306,6 +306,8 @@ def RateSongPage(request, song_id):
 
     song = get_object_or_404(Song, id=song_id)
 
+    spotify_url = "https://open.spotify.com/embed/track/3TO7bbrUKrOSPGRTB5MeCz?utm_source=generator"
+
     if request.method == "POST":
         rating = request.POST.get('rating')
         if rating:
@@ -319,6 +321,7 @@ def RateSongPage(request, song_id):
     context = {
         "song": song,
         "username": username,
+        'spotify_url': spotify_url
     }
     return HttpResponse(template.render(context, request))
 
