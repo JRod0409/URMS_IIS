@@ -1,64 +1,69 @@
 from django.http import HttpResponse
-from django.shortcuts import render, loader, redirect, redirect
+from django.shortcuts import render, loader, redirect
 from django.urls import reverse
 from datetime import datetime, timedelta
-from .models import User,Admin,Song,Artists
+from .models import User,Admin,Song,Artists, Rating
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
+import random
 #from .forms import ImageUploadForm
 
 def NewHomePage(request):
-
     if request.path == "/":
         return redirect("/home/")
+    
+    if "home" in request.POST:
+            return redirect("/home/")
+        
+    if "profile" in request.POST:
+        if userLogedIn:
+            username = request.session.get("loggedUser")
+            userModel = User.objects.get(username=username)
+            return redirect(f"/profile/?user={userModel.username}")
+            
+        else:
+            return redirect("/login/")
+
+    #If signup button is pushed
+    if "signup" in request.POST:
+        return redirect("/signup/")
+
+    if "browse" in request.POST:
+        return redirect("/browse/")  
 
     userLogedIn = False
     if request.session.get("loggedUser"):
         userLogedIn = True
 
     if request.method == "POST":
-
-        #POST reference for debug
+        # (your POST code stays the same)
         print("Current POST: " + str(request.POST))
 
-        if "logout" in request.POST:
-            request.session["loggedUser"] = ""
-            return redirect("/home/")
-        
-        if "profile" in request.POST:
-            if userLogedIn:
-                username = request.session.get("loggedUser")
-                userModel = User.objects.get(username=username)
-                return redirect(f"/profile/?user={userModel.username}")
-            else:
-                return redirect("/login/")
-        
-        if "login" in request.POST:
-            return redirect("/login/")
-        
-        if "browse" in request.POST:
-            return redirect("/browse/")
-        
-
-    sort_by = request.GET.get('sort', 'title')  # Default sort by title
+    sort_by = request.GET.get('sort', 'title')
     valid_sorts = {
         'artist': 'artist__name',
         'genre': 'genre',
-        'currentRating': '-currentRating',  
+        'currentRating': '-currentRating',
         'releaseDate': 'releaseDate'
     }
     sort_field = valid_sorts.get(sort_by, 'title')
 
     songs = Song.objects.all().order_by(sort_field)
 
-    # 🛠️ New: fetch top song like in HomePage
+    # Pick 10 random songs for daily lineup
+    if not request.session.get("inSongLineup"):
+        all_song_ids = list(Song.objects.values_list('id', flat=True))
+        lineup_ids = random.sample(all_song_ids, min(10, len(all_song_ids)))
+        request.session["inSongLineup"] = lineup_ids
+
+    lineup_songs = Song.objects.filter(id__in=request.session["inSongLineup"])
+
+    # Top song and artists
     today = datetime.now()
     start_of_week = today - timedelta(days=today.weekday())
-
     top_song = Song.objects.filter(dateAdded__gte=start_of_week).order_by('-currentRating').first()
 
     if not top_song:
-        # If no recent songs, fallback to best rated overall
         top_song = Song.objects.order_by('-currentRating').first()
 
     top_artist_ids = (
@@ -68,16 +73,15 @@ def NewHomePage(request):
         .order_by('-avg_rating')
         .values_list('artist', flat=True)[:3]
     )
-
-    # Now fetch full Artist objects
     top_artists = Artists.objects.filter(id__in=top_artist_ids)
 
     template = loader.get_template("homepage.html")
     context = {
         "userLogedIn": userLogedIn,
         "song": songs,
+        "lineup_songs": lineup_songs,   # 🛠️ pass the lineup
         "current_sort": sort_by,
-        "top_song": top_song,  # 🛠️ Pass top_song to template
+        "top_song": top_song,
         "top_artists": top_artists,
     }
     return HttpResponse(template.render(context, request))
@@ -290,8 +294,13 @@ def RateSongPage(request, song_id):
     if not username:
         return redirect("/login/")
     
-    songLineup = request.session.get("inSongLineup")
-
+    if "browse" in request.POST:
+        return redirect("/browse/")
+    
+    if "profile" in request.POST:
+        return redirect("/profile/")
+    
+    user = User.objects.get(username=username)
     song = get_object_or_404(Song, id=song_id)
 
     if request.method == "POST":
@@ -301,6 +310,10 @@ def RateSongPage(request, song_id):
             song.totalVotes += 1
             song.currentRating = ((song.currentRating * (song.totalVotes - 1)) + rating) / song.totalVotes
             song.save()
+
+            # 🛠️ Save the Rating
+            Rating.objects.create(user=user, song=song, score=rating)
+
             return redirect("/home/")
 
     template = loader.get_template("rate_song.html")

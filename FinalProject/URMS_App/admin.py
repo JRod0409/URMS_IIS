@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User,Admin,Song,TestModel,Artists
+from .models import User,Admin,Song,TestModel,Artists,Rating
 
 class SongAdmin(admin.ModelAdmin):
     search_fields = ['title', 'album', 'genre', 'album_art_url']
@@ -7,4 +7,5 @@ class SongAdmin(admin.ModelAdmin):
 admin.site.register(User)
 admin.site.register(Admin)
 admin.site.register(Artists)
+admin.site.register(Rating)
 admin.site.register(Song, SongAdmin)

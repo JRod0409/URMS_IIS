@@ -114,3 +114,12 @@ class Song(models.Model):
 
     def __str__(self):
         return self.title + " - " + str(self.album) + " Rating: " + str(self.currentRating)
+    
+class Rating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    song = models.ForeignKey(Song, on_delete=models.CASCADE)
+    score = models.FloatField()
+    rated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} rated {self.song.title} - {self.score}"

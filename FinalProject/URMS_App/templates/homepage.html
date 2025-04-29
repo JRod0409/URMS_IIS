@@ -37,6 +37,13 @@
 .second-bg {
     background-color: #C3c3c3;
 }
+.lineup-row {
+
+}
+
+.lineup-item {
+
+}
 
 </style>
 
@@ -59,8 +66,7 @@
         <div style="flex-direction: row;">
             <div>
                 {% if top_song and top_song.id %}
-                <a href="#" class="btn" style="background-color: #252525; color: #ffffff; width: 15%;"><strong>View</strong></a>
-                <a href="{% url 'rate_song' top_song.id %}" class="btn" style="background-color: #c3c3c3; color: #252525; width: 15%;"><strong>Rate</strong></a>
+                <a href="{% url 'rate_song' top_song.id %}" class="btn" style="background-color: #252525; color: #ffffff; width: 15%;"><strong>Rate</strong></a>
                 {% else %}
                 <p> No top song available!</p>
                 {% endif %}
@@ -117,6 +123,20 @@
 
         </div>
     </div>
+
+    {% if lineup_songs %}
+    <h2>🎵 Daily Song Lineup</h2>
+    <div class="lineup-row">
+    {% for song in lineup_songs %}
+        <div class="lineup-item">
+            {{ song.title }} by {{ song.artist.name }}
+            <a href="{% url 'rate_song' song.id %}" class="btn" style="background-color: #252525; color: #ffffff; width: 15%;"><strong>Rate</strong></a>
+            <img src="{{ song.album_art_url }}" style="width: 100px; height: 100px;">
+        </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+    
 
 
     
