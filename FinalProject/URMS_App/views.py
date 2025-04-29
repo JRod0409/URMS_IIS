@@ -30,6 +30,13 @@ def NewHomePage(request):
 
     if "browse" in request.POST:
         return redirect("/browse/")  
+    
+    if "logout" in request.POST:
+            request.session["loggedUser"] = ""
+            return redirect("/home/")
+    
+    if "login" in request.POST:
+            return redirect("/login/")
 
     userLogedIn = False
     if request.session.get("loggedUser"):
@@ -294,6 +301,13 @@ def RateSongPage(request, song_id):
     
     if "profile" in request.POST:
         return redirect("/profile/")
+    
+    if "logout" in request.POST:
+            request.session["loggedUser"] = ""
+            return redirect("/home/")
+    
+    if "login" in request.POST:
+            return redirect("/login/")
     
     user = User.objects.get(username=username)
     song = get_object_or_404(Song, id=song_id)
