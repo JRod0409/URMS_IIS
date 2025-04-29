@@ -2,59 +2,10 @@ from django.http import HttpResponse
 from django.shortcuts import render, loader, redirect, redirect
 from django.urls import reverse
 from datetime import datetime, timedelta
-from .models import User,Admin,Song
+from .models import User,Admin,Song,Artists
 from django.shortcuts import get_object_or_404
+from django.db.models import Avg
 #from .forms import ImageUploadForm
-
-
-def HomePage(request):
-
-    userLogedIn = False
-
-    #if path is empty, send to home page
-    if request.path == "/":
-        return redirect("/home/")
-    
-
-    if request.session.get("loggedUser"):
-        userLogedIn = True
-
-
-    if request.method == "POST":
-
-        if "logout" in request.POST:
-            request.session["loggedUser"] = ""
-            return redirect("/home/")
-        
-        if "profile" in request.POST:
-            if userLogedIn:
-
-                username = request.session.get("loggedUser")
-                userModel = User.objects.get(username=username)
-                return redirect(f"/profile/?user={userModel.username}")
-            
-            else:
-                return redirect("/login/")
-        
-        if "login" in request.POST:
-            return redirect("/login/")
-        
-        if "browse" in request.POST:
-            return redirect("/browse/")
-
-    # Get the current date and the start of the week (Monday)
-    today = datetime.now()
-    start_of_week = today - timedelta(days=today.weekday())  # Monday of the current week
-
-    # Fetch the top song of the week based on rating
-    top_song = Song.objects.filter(dateAdded__gte=start_of_week).order_by('-currentRating').first()
-
-    context = {
-        "userLogedIn": userLogedIn,
-        "top_song": top_song,
-    }
-
-    return render(request, "homepage.html", context)
 
 def NewHomePage(request):
 
@@ -105,12 +56,24 @@ def NewHomePage(request):
     start_of_week = today - timedelta(days=today.weekday())
     top_song = Song.objects.filter(dateAdded__gte=start_of_week).order_by('-currentRating').first()
 
+    top_artist_ids = (
+        Song.objects.filter(dateAdded__gte=start_of_week)
+        .values('artist')
+        .annotate(avg_rating=Avg('currentRating'))
+        .order_by('-avg_rating')
+        .values_list('artist', flat=True)[:3]
+    )
+
+    # Now fetch full Artist objects
+    top_artists = Artists.objects.filter(id__in=top_artist_ids)
+
     template = loader.get_template("homepage.html")
     context = {
         "userLogedIn": userLogedIn,
         "song": songs,
         "current_sort": sort_by,
         "top_song": top_song,  # 🛠️ Pass top_song to template
+        "top_artists": top_artists,
     }
     return HttpResponse(template.render(context, request))
 
