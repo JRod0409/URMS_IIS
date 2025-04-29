@@ -54,7 +54,12 @@ def NewHomePage(request):
     # 🛠️ New: fetch top song like in HomePage
     today = datetime.now()
     start_of_week = today - timedelta(days=today.weekday())
+
     top_song = Song.objects.filter(dateAdded__gte=start_of_week).order_by('-currentRating').first()
+
+    if not top_song:
+        # If no recent songs, fallback to best rated overall
+        top_song = Song.objects.order_by('-currentRating').first()
 
     top_artist_ids = (
         Song.objects.filter(dateAdded__gte=start_of_week)
