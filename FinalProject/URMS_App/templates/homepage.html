@@ -38,11 +38,50 @@
     background-color: #C3c3c3;
 }
 .lineup-row {
-
+    display: flex;
+    flex-direction: row;
 }
 
 .lineup-item {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    background-color: #c3c3c3;
+    border-radius: 10px;
+    width: 15%;
+}
 
+.lineup-item img {
+    width: 100%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.container {
+    background-color: #FFFFFF;
+    width: 100% !important;
+    height: auto;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.lineup-button {
+    width: 100%;
+    height: 40%;
+}
+
+.lineup-button a {
+    width: 50px;
+    height: 100%;
+    
+}
+
+.lineup-button-top {
+    height: 60%;
+}
+
+.lineup-bottom {
+    height: 100%;
 }
 
 </style>
@@ -110,32 +149,30 @@
         {% endif %}
     </div>
 
-    <!--Daily Song Lineup (Title and Button)-->
-    <div class="daily-song-lineup-left" style="text-align: center;">
-        <h2 style="font-size: 2.2em;">Daily Song Lineup</h2>
-
-        <div class="mb-5" style="flex-direction: row;">
-            {% if top_song and top_song.id %}
-            <a href="{% url 'rate_song' top_song.id %}" class="btn" style="background-color: #252525; color: #ffffff; width: 15%;"><strong>Start Lineup</strong></a>
-            {% else %}
-            <p> There is no top song available for the line up! </p>
-            {% endif %}
-
-        </div>
-    </div>
-
+    <div class="container">
     {% if lineup_songs %}
-    <h2>🎵 Daily Song Lineup</h2>
+    <h2 style="text-align: center; margin-bottom: 30px;">🎵 Random Song Lineup</h2>
     <div class="lineup-row">
     {% for song in lineup_songs %}
         <div class="lineup-item">
-            {{ song.title }} by {{ song.artist.name }}
-            <a href="{% url 'rate_song' song.id %}" class="btn" style="background-color: #252525; color: #ffffff; width: 15%;"><strong>Rate</strong></a>
-            <img src="{{ song.album_art_url }}" style="width: 100px; height: 100px;">
+            {% if song.album_art_url %}
+                <img src="{{ song.album_art_url }}">
+            {% endif %}
+            <div class="lineup-bottom">
+            <div class="lineup-button-top">
+                <strong>{{ song.title }} </strong>by {{ song.artist.name }}
+            </div>
+            <div class="lineup-button">
+                <a href="{% url 'rate_song' song.id %}" class="btn" style="background-color: #252525; color: #ffffff; width: 30%;"><strong>Rate</strong></a>
+            </div>
+            </div>
         </div>
     {% endfor %}
     </div>
+    {% else %}
+    <p>No songs in the lineup today.</p>
     {% endif %}
+    </div>
     
 
 

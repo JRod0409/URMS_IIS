@@ -64,6 +64,7 @@
                     <p><strong>Genre:</strong> {{ song.genre }}</p>
                     <p><strong>Release Year:</strong> {{ song.releaseDate }}</p>
                     <p><strong>Score:</strong> {{ song.currentRating }} ⭐</p>
+                    <a href="{% url 'rate_song' song.id %}" class="btn" style="background-color: #252525; color: #ffffff; width: 6%;"><strong>Rate</strong></a>
                 </div>
             </div>
         </div>

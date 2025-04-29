@@ -13,7 +13,7 @@ auth_manager = SpotifyClientCredentials(client_id=SPOTIFY_CLIENT_ID, client_secr
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
 # Playlist ID from your link
-playlist_id = '3EstfYfgPCZ6CDkune4vmx'
+playlist_id = '2hMGNPsSqH4FIhcznuS8cL'
 
 # Fetch first batch
 results = sp.playlist_tracks(playlist_id)
@@ -33,27 +33,45 @@ for item in tracks:
     artists_list = track['artists']
 
     # Use the first artist (main one)
-    artist_name = artists_list[0]['name']
+    artist_info = artists_list[0]
+    artist_name = artist_info['name']
+    artist_id = artist_info['id']  # <-- needed to get genres
 
     # Try to find or create artist
     artist_obj, created = Artists.objects.get_or_create(
         name=artist_name,
         defaults={
-            "birthplace": "Unknown",          # Placeholder
-            "artist_fact": "No facts yet.",    # Placeholder
-            "spouse": "Unknown",               # Placeholder
+            "birthplace": "Unknown",
+            "artist_fact": "No facts yet.",
+            "spouse": "Unknown",
         }
     )
 
-    # Extract album art URL (getting the largest image)
+    # Get album art URL
     album_art_url = track['album']['images'][0]['url'] if track['album']['images'] else None
 
-    # Extract Spotify URL for the track
+    # Get Spotify track URL
     spotify_url = track['external_urls']['spotify']
 
-    # Handle release date if it's only a year
-    if len(release_date) == 4:  # Year-only format (e.g., "2001")
-        release_date = f"{release_date}-01-01"  # Use January 1st as the date
+    # Handle release date if only year
+    if len(release_date) == 4:
+        release_date = f"{release_date}-01-01"
+
+    # 🎸 Get genre by querying the artist info
+    genre_list = []
+    try:
+        artist_data = sp.artist(artist_id)
+        genre_list = artist_data.get('genres', [])
+    except Exception as e:
+        print(f"Couldn't fetch genres for {artist_name}: {e}")
+
+    genre = genre_list[0] if genre_list else "Unknown"
+
+    # 🎵 Build the Spotify embed URL (optional)
+    # The normal track URL is like https://open.spotify.com/track/{track_id}
+    # Embed URL is like https://open.spotify.com/embed/track/{track_id}
+    track_id = track['id']
+    spotify_embed_url = f"https://open.spotify.com/embed/track/{track_id}"
 
     # Create the song
     Song.objects.create(
@@ -62,11 +80,11 @@ for item in tracks:
         artist=artist_obj,
         releaseDate=datetime.strptime(release_date, "%Y-%m-%d").date(),
         dateAdded=datetime.now().date(),
-        currentRating=round(random.uniform(3.0, 5.0), 1),  # Random starting rating (3.0 to 5.0)
+        currentRating=round(random.uniform(3.0, 5.0), 1),
         totalVotes=0,
-        genre="Unknown",  # You can improve this if you want
-        album_art_url=album_art_url,  # Store the album art URL
-        spotify_url=spotify_url      # Store the Spotify URL
+        genre=genre,
+        album_art_url=album_art_url,
+        spotify_url=spotify_embed_url  # Use the embed link now
     )
 
-print("🎵 All songs and artists imported successfully!")
+print("🎵 All songs and artists imported successfully with genres and embeds!")

@@ -6,25 +6,25 @@ from .models import User,Admin,Song,Artists, Rating
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
 import random
+from random import sample
 #from .forms import ImageUploadForm
+
 
 def NewHomePage(request):
     if request.path == "/":
         return redirect("/home/")
     
     if "home" in request.POST:
-            return redirect("/home/")
+        return redirect("/home/")
         
     if "profile" in request.POST:
-        if userLogedIn:
+        if request.session.get("loggedUser"):
             username = request.session.get("loggedUser")
             userModel = User.objects.get(username=username)
             return redirect(f"/profile/?user={userModel.username}")
-            
         else:
             return redirect("/login/")
 
-    #If signup button is pushed
     if "signup" in request.POST:
         return redirect("/signup/")
 
@@ -35,10 +35,7 @@ def NewHomePage(request):
     if request.session.get("loggedUser"):
         userLogedIn = True
 
-    if request.method == "POST":
-        # (your POST code stays the same)
-        print("Current POST: " + str(request.POST))
-
+    # Song Sorting
     sort_by = request.GET.get('sort', 'title')
     valid_sorts = {
         'artist': 'artist__name',
@@ -50,13 +47,8 @@ def NewHomePage(request):
 
     songs = Song.objects.all().order_by(sort_field)
 
-    # Pick 10 random songs for daily lineup
-    if not request.session.get("inSongLineup"):
-        all_song_ids = list(Song.objects.values_list('id', flat=True))
-        lineup_ids = random.sample(all_song_ids, min(10, len(all_song_ids)))
-        request.session["inSongLineup"] = lineup_ids
-
-    lineup_songs = Song.objects.filter(id__in=request.session["inSongLineup"])
+    # ✅ Fixing Lineup Songs
+    lineup_songs = sample(list(songs), 5)  # Randomly pick 10 songs from the list
 
     # Top song and artists
     today = datetime.now()
@@ -79,12 +71,15 @@ def NewHomePage(request):
     context = {
         "userLogedIn": userLogedIn,
         "song": songs,
-        "lineup_songs": lineup_songs,   # 🛠️ pass the lineup
+        "lineup_songs": lineup_songs,   # ✅ pass properly
         "current_sort": sort_by,
         "top_song": top_song,
         "top_artists": top_artists,
     }
+    
     return HttpResponse(template.render(context, request))
+
+
 
 
 
