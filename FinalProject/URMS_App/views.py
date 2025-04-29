@@ -421,38 +421,37 @@ def get_spotify_token():
     response_data = response.json()
     return response_data.get("access_token")
 
-@login_required
 def AddSongPage(request):
-    if request.session.get("loggedUser"):
-        userLogedIn = True
+    userLogedIn = False
+    username = request.session.get("loggedUser")
 
-    if "home" in request.POST:
-        return redirect("/home/")
-        
-    if "login" in request.POST:
+    # Redirect to login if not logged in
+    if not username:
         return redirect("/login/")
-        
-    if "profile" in request.POST:
-        return redirect(f"/profile/?user={username}")
-        
-    if "logout" in request.POST:
-        request.session["loggedUser"] = ""
-        return redirect("/home/")
 
-    if "browse" in request.POST:
-        return redirect("/browse/")
+    userLogedIn = True
 
-    if "saveprofile" in request.POST:
-        newEmail = request.POST.get("email")   
-
-
+    # Handle nav bar redirects
     if request.method == "POST":
+        if "home" in request.POST:
+            return redirect("/home/")
+        if "login" in request.POST:
+            return redirect("/login/")
+        if "profile" in request.POST:
+            return redirect(f"/profile/?user={username}")
+        if "logout" in request.POST:
+            request.session["loggedUser"] = ""
+            return redirect("/home/")
+        if "browse" in request.POST:
+            return redirect("/browse/")
+        if "saveprofile" in request.POST:
+            newEmail = request.POST.get("email")
+
+        # Handle adding song
         spotify_url = request.POST.get("spotify_url")
         if not spotify_url:
             messages.error(request, "Spotify URL is required.")
             return redirect("addsong")
-        
-        
 
         # Extract Spotify track ID
         try:
@@ -472,17 +471,40 @@ def AddSongPage(request):
 
         # Fetch track details
         track_response = requests.get(f"https://api.spotify.com/v1/tracks/{track_id}", headers=headers)
-
         if track_response.status_code != 200:
             messages.error(request, "Error fetching track from Spotify.")
             return redirect("addsong")
 
         track_data = track_response.json()
         title = track_data["name"]
-        release_date = track_data["album"].get("release_date", None)
         album_name = track_data["album"]["name"]
         album_art_url = track_data["album"]["images"][0]["url"] if track_data["album"]["images"] else None
         artist_name = track_data["artists"][0]["name"]
+
+        # Inside your view where you extract release_date:
+        release_date_raw = track_data["album"].get("release_date", None)
+
+        # Normalize to YYYY-MM-DD if possible
+        release_date = None
+        if release_date_raw:
+            try:
+                # Year only
+                if re.match(r"^\d{4}$", release_date_raw):
+                    release_date = f"{release_date_raw}-01-01"
+                # Year and month
+                elif re.match(r"^\d{4}-\d{2}$", release_date_raw):
+                    release_date = f"{release_date_raw}-01"
+                # Full date
+                elif re.match(r"^\d{4}-\d{2}-\d{2}$", release_date_raw):
+                    release_date = release_date_raw
+                else:
+                    release_date = None  # fallback in case of invalid format
+
+                # Parse to datetime.date to ensure it's valid
+                release_date = datetime.strptime(release_date, "%Y-%m-%d").date()
+
+            except Exception as e:
+                release_date = None
 
         # Build Spotify embed link
         embed_url = f"https://open.spotify.com/embed/track/{track_id}"
@@ -516,7 +538,6 @@ def AddSongPage(request):
         return redirect("addsong")
 
     context = {
-        "userLoggedIn": userLogedIn,
+        "userLogedIn": userLogedIn,
     }
-
     return render(request, "add_song.html", context)
