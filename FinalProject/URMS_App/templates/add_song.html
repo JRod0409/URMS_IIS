@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Add Song{% endblock %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <label for="spotify_url">Spotify Track URL:</label>
+  <input type="text" name="spotify_url" id="spotify_url" required>
+  <button type="submit">Add Song</button>
+</form>
+
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

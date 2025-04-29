@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import NewHomePage, LogInPage, SignUpPage, ProfilePage, EditProfilePage, RateSongPage, Browse
+from .views import NewHomePage, LogInPage, SignUpPage, ProfilePage, EditProfilePage, RateSongPage, Browse, AddSongPage
 
 urlpatterns = [
 path('home/', NewHomePage, name="home"),
@@ -11,4 +11,5 @@ path('profile/', ProfilePage, name="profile"),
 path('edit/', EditProfilePage, name="edit"),
 path('rate/<int:song_id>/', RateSongPage, name='rate_song'),
 path('browse/', Browse, name='browse'),
+path('addsong/', AddSongPage, name='addsong'),
 ]

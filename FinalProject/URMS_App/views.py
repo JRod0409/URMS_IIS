@@ -1,14 +1,22 @@
 from django.http import HttpResponse
 from django.shortcuts import render, loader, redirect
 from django.urls import reverse
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from .models import User,Admin,Song,Artists, Rating
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
-import random
 from random import sample
-#from .forms import ImageUploadForm
+from django import forms
+import re
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+from django.conf import settings
+from .forms import SpotifySongForm
+import base64, requests
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
+#from .forms import ImageUploadForm
 
 def NewHomePage(request):
     if request.path == "/":
@@ -197,7 +205,6 @@ def EditProfilePage(request):
         return redirect("login")
 
     username = userModel.username
-    userEmail = userModel.email
 
     error = ""
 
@@ -389,3 +396,127 @@ def Browse(request):
         "top_song": top_song,  # 🛠️ Pass top_song to template
     }
     return HttpResponse(template.render(context, request))
+
+def extract_track_id(url):
+    match = re.search(r'track/([a-zA-Z0-9]+)', url)
+    return match.group(1) if match else None
+
+
+def get_spotify_token():
+    SPOTIFY_CLIENT_ID = '68b3c187a7cc421dbb044c38fa33e85e'
+    SPOTIFY_CLIENT_SECRET = '8ea2a36f0665482aa2f1a109cf2d3948'
+    auth_str = f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}"
+    b64_auth_str = base64.b64encode(auth_str.encode()).decode()
+
+    headers = {
+        "Authorization": f"Basic {b64_auth_str}",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+
+    data = {
+        "grant_type": "client_credentials"
+    }
+
+    response = requests.post("https://accounts.spotify.com/api/token", headers=headers, data=data)
+    response_data = response.json()
+    return response_data.get("access_token")
+
+@login_required
+def AddSongPage(request):
+    if request.session.get("loggedUser"):
+        userLogedIn = True
+
+    if "home" in request.POST:
+        return redirect("/home/")
+        
+    if "login" in request.POST:
+        return redirect("/login/")
+        
+    if "profile" in request.POST:
+        return redirect(f"/profile/?user={username}")
+        
+    if "logout" in request.POST:
+        request.session["loggedUser"] = ""
+        return redirect("/home/")
+
+    if "browse" in request.POST:
+        return redirect("/browse/")
+
+    if "saveprofile" in request.POST:
+        newEmail = request.POST.get("email")   
+
+
+    if request.method == "POST":
+        spotify_url = request.POST.get("spotify_url")
+        if not spotify_url:
+            messages.error(request, "Spotify URL is required.")
+            return redirect("addsong")
+        
+        
+
+        # Extract Spotify track ID
+        try:
+            track_id = spotify_url.split("track/")[1].split("?")[0]
+        except IndexError:
+            messages.error(request, "Invalid Spotify track URL.")
+            return redirect("addsong")
+
+        token = get_spotify_token()
+        if not token:
+            messages.error(request, "Failed to authenticate with Spotify.")
+            return redirect("addsong")
+
+        headers = {
+            "Authorization": f"Bearer {token}"
+        }
+
+        # Fetch track details
+        track_response = requests.get(f"https://api.spotify.com/v1/tracks/{track_id}", headers=headers)
+
+        if track_response.status_code != 200:
+            messages.error(request, "Error fetching track from Spotify.")
+            return redirect("addsong")
+
+        track_data = track_response.json()
+        title = track_data["name"]
+        release_date = track_data["album"].get("release_date", None)
+        album_name = track_data["album"]["name"]
+        album_art_url = track_data["album"]["images"][0]["url"] if track_data["album"]["images"] else None
+        artist_name = track_data["artists"][0]["name"]
+
+        # Build Spotify embed link
+        embed_url = f"https://open.spotify.com/embed/track/{track_id}"
+
+        # Fetch artist genres
+        artist_id = track_data["artists"][0]["id"]
+        artist_response = requests.get(f"https://api.spotify.com/v1/artists/{artist_id}", headers=headers)
+
+        if artist_response.status_code == 200:
+            artist_data = artist_response.json()
+            genres = artist_data.get("genres", [])
+            genre = genres[0] if genres else None
+        else:
+            genre = None
+
+        # Ensure the artist exists
+        artist, created = Artists.objects.get_or_create(name=artist_name)
+
+        # Create song
+        Song.objects.create(
+            title=title,
+            album=album_name,
+            artist=artist,
+            releaseDate=release_date,
+            genre=genre,
+            album_art_url=album_art_url,
+            spotify_url=embed_url,
+        )
+
+        messages.success(request, f"Song '{title}' by {artist_name} added successfully.")
+        return redirect("addsong")
+
+    context = {
+        "userLoggedIn": userLogedIn,
+    }
+
+    return render(request, "add_song.html", context)

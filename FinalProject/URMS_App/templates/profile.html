@@ -25,13 +25,21 @@
         <h2 class="mb-2 container">
             Email: {{ user.email }} 
         </h2>
-
-        <form method="post" class="w-25">
+        <div style="display: flex;">
+        <form method="post">
             {% csrf_token %}
             <span class="p-2 float-start">
                 <button type="submit" name="editprofile" class="btn btn-primary btn-lg">Edit Profile</button>
             </span>
         </form>
+
+        <form method="post" class="w-25">
+            {% csrf_token %}
+            <span class="p-2 float-start">
+                <button formaction="{% url 'addsong' %}" class="btn btn-primary btn-lg">Add a Song</button>
+            </span>
+        </form>
+        </div>
     </div>
     
 {% endblock %}
