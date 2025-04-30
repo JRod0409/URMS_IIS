@@ -1,0 +1,183 @@
+{% extends 'homebase.html' %}
+
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<style>
+.top-song-this-week {
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: row;
+    width: 100% !important;
+    height: auto;
+    padding-left: 9%;
+    padding-right: 9%;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.top-song-this-week-left {
+    width: 50% !important;
+    display: flex;
+    justify-content: center;
+}
+
+.top-song-this-week-right {
+    margin: 0 auto;
+    padding: 0px;
+    width: 50%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.second-bg {
+    background-color: #C3c3c3;
+}
+.lineup-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.lineup-item {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    background-color: #c3c3c3;
+    border-radius: 10px;
+    width: 15%;
+}
+
+.lineup-item img {
+    width: 100%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.container {
+    background-color: #FFFFFF;
+    width: 100% !important;
+    height: auto;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.lineup-button {
+    width: 100%;
+    height: 40%;
+}
+
+.lineup-button a {
+    width: 50px;
+    height: 100%;
+    
+}
+
+.lineup-button-top {
+    height: 60%;
+}
+
+.lineup-bottom {
+    height: 100%;
+}
+
+</style>
+
+
+    <div class="top-song-this-week">
+        <div class="top-song-this-week-left">
+        
+    <div class="row" style="height: auto; padding-top: 10%; padding-bottom: 10%; width: 75%;">
+        <div>
+            <h2 style="font-size: 2.2em; margin-left: 0px;">Top Song This Week</h2>
+            {% if top_song %}
+                <p style="margin: 0px;"><strong>Title:</strong> {{ top_song.title }}</p>
+                <p style="margin: 0px;"><strong>Artist:</strong> {{ top_song.artist.name }}</p>
+                <p><strong>Score:</strong> {{ top_song.currentRating }} ⭐</p>
+            {% else %}
+                <p>No top song available this week.</p>
+            {% endif %}
+        </div>
+         <!-- Action Buttons -->
+        <div style="flex-direction: row;">
+            <div>
+                {% if top_song and top_song.id %}
+                <a href="{% url 'rate_song' top_song.id %}" class="btn" style="background-color: #252525; color: #ffffff; width: 15%;"><strong>Rate</strong></a>
+                {% else %}
+                <p> No top song available!</p>
+                {% endif %}
+            </div>
+        </div>
+        
+    </div>
+    </div>
+
+    
+    <div class="top-song-this-week-right">
+        {% if top_song and top_song.album_art_url %}
+            <img src="{{ top_song.album_art_url }}" alt="Album Art" style="width: 50% !important; height: auto !important;" class="img-fluid rounded top-song-this-week-right-img">
+        {% else %}
+            <img src="{% static 'default_album_art.jpg' %}" alt="Album Art" class="img-fluid rounded top-song-this-week-right-img">
+        {% endif %}
+    </div>
+    </div>
+
+    <div class="top-artists-this-week" style="background-color: #c3c3c3; padding: 50px 9%;">
+        <h2 style="font-size: 2.2em; text-align: center;">Top Artists This Week</h2>
+    
+        {% if top_artists %}
+        <div class="row" style="display: flex; justify-content: space-around; margin-top: 30px;">
+            {% for artist in top_artists %}
+            <div class="col-md-3 text-center" style="flex: 1; margin: 10px;">
+                <div style="background-color: #f7f7f7; border-radius: 10px; padding: 20px; height: 100%;">
+                    <h3 style="font-size: 1.5em;">{{ artist.name }}</h3>
+                    {% if artist.birthplace == false %}
+                        <p><strong>Birthplace:</strong> {{ artist.birthplace }}</p>
+                    {% endif %}
+                    {% if artist.artist_fact %}
+                        <p><strong>Fun Fact:</strong> {{ artist.artist_fact }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="text-align: center;">No top artists available this week.</p>
+        {% endif %}
+    </div>
+
+    <div class="container">
+    {% if lineup_songs %}
+    <h2 style="text-align: center; margin-bottom: 30px;">🎵 Random Song Lineup</h2>
+    <div class="lineup-row">
+    {% for song in lineup_songs %}
+        <div class="lineup-item">
+            {% if song.album_art_url %}
+                <img src="{{ song.album_art_url }}">
+            {% endif %}
+            <div class="lineup-bottom">
+            <div class="lineup-button-top">
+                <strong>{{ song.title }} </strong>by {{ song.artist.name }}
+            </div>
+            <div class="lineup-button">
+                <a href="{% url 'rate_song' song.id %}" class="btn" style="background-color: #252525; color: #ffffff; width: 30%;"><strong>Rate</strong></a>
+            </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    {% else %}
+    <p>No songs in the lineup today.</p>
+    {% endif %}
+    </div>
+    
+
+
+    
+{% endblock %}
+</div>
+</body>
+</html>

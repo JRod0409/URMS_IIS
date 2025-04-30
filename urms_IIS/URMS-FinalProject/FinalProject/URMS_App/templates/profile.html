@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+    <div class="text-center">
+        <h1 class="mb-4">User Rated Music Site</h1>
+        <h2 class="mb-2">Profile</h2>
+    </div>
+    
+    {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" class="img-thumbnail" alt="Profile Picture">
+    {% else %}
+        <img src="{% static 'profile_pictures/default.png' %}" class="img-thumbnail" alt="Default Profile">
+    {% endif %}
+
+
+    <div class="mb-2 container">
+        <h2 class="mb-2 container">
+            Username: {{ user.username }} 
+        </h2>
+        <h2 class="mb-2 container">
+            Email: {{ user.email }} 
+        </h2>
+        <div style="display: flex;">
+        <form method="post">
+            {% csrf_token %}
+            <span class="p-2 float-start">
+                <button type="submit" name="editprofile" class="btn btn-primary btn-lg">Edit Profile</button>
+            </span>
+        </form>
+
+        <form method="post" class="w-25">
+            {% csrf_token %}
+            <span class="p-2 float-start">
+                <button formaction="{% url 'addsong' %}" class="btn btn-primary btn-lg">Add a Song</button>
+            </span>
+        </form>
+        </div>
+    </div>
+    
+{% endblock %}

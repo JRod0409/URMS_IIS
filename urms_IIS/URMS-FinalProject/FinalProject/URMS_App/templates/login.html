@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-column justify-content-center align-items-center">
+        <h1 class="mb-4">User Rated Music Site</h1>
+        <h2 class="mb-2">Login</h2>
+        <form action="/login/" method="post" class="w-25">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username">
+            </div>
+            <div class="mb-4">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password">
+            </div>
+            <h5 class="mb-3 text-danger">
+                {{ error }}
+            </h5>
+
+            <div>
+                <div class="mb-2">
+                    <button type="submit" name="login" class="btn btn-primary w-100">Login</button>
+                </div>
+
+                <h6 class="mb-2 text-center">Don't have an account?</h6>
+
+                <div class="mb-2">
+                    <button type="submit" name="signup" class="btn btn-primary w-100">Sign Up</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

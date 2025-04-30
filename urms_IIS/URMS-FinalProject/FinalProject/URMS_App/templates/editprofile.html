@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+
+
+    <div class="text-center">
+        <h1 class="mb-4">User Rated Music Site</h1>
+        <h2 class="mb-2">Edit Profile</h2>
+    </div>
+
+    <!----
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="uploadPicture">Upload</button>
+    </form>
+    !-->
+
+    <div class="mb-2 container">
+        <form method="post" class="w-25">
+            {% csrf_token %}
+            <div class="mb-2 container">
+                <h2 class="mb-2">
+                    <div class="mb-4">
+                        <h2 class="mb-2">Email</h2>
+                        <input type="text" class="form-control-lg" id="email" name="email" value={{userEmail}}>
+                    </div>
+                </h2>
+
+                <h5 class="mb-3 text-danger">
+                    {{ error }}
+                </h5>
+
+                <span class="p-2 float-start">
+                    <button type="submit" name="saveprofile" class="btn btn-primary btn-lg">Save Profile</button>
+                </span>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
