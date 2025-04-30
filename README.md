@@ -28,7 +28,7 @@ Install the following python libraries:
 
 **Follow this tutorial by Johnnyboycurtis on YouTube for proper IIS configuration.**
 
-[![Deploy Django on Windows using Microsoft IIS by Johnnyboycurtis on YouTube.](https://img.youtube.com/vi/APCQ15YqqQ0/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
+[![Deploy Django on Windows using Microsoft IIS by Johnnyboycurtis on YouTube.](https://img.youtube.com/vi/APCQ15YqqQ0/0.jpg)](https://www.youtube.com/watch?v=APCQ15YqqQ0)
 ## Deployment
 
 Once you have bound the website to a domain or public IP address and you have port forwarded the IP address of your site, you can run and test the website.
