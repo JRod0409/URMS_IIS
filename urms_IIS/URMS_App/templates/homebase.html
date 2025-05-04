@@ -18,6 +18,9 @@
             {% csrf_token %}
             <ul class="navbar-nav">
                 <span class="p-2">
+                    <img src="{% static 'logo.png' %}" class="img-thumbnail btn btn-lg" alt="Default Profile" style="height: 2.3em; padding: 0px;">
+                </span> 
+                <span class="p-2">
                     <button type="submit" name="home" class="btn btn-lg custom_css">HOME</button>
                 </span>
                 <span class="p-2">
@@ -87,6 +90,13 @@ document.getElementById('sortSelect').addEventListener('change', function() {
 });
 </script>
 {% endblock %}
+
+<footer class="text-center mt-5 py-4 bg-light border-top" >
+    <div>
+        <img src="{% static 'logo.png' %}" alt="URMS Logo" style="height: 40px;">
+        <p class="mb-0 mt-2 text-muted">&copy; {% now "Y" %} URMS. All rights reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>

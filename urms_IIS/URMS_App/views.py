@@ -523,6 +523,12 @@ def AddSongPage(request):
         # Ensure the artist exists
         artist, created = Artists.objects.get_or_create(name=artist_name)
 
+        # Check for duplicates
+        existing_song = Song.objects.filter(title__iexact=title, artist=artist).first()
+        if existing_song:
+            messages.warning(request, f"Song '{title}' by {artist_name} already exists in the database.")
+            return redirect("addsong")
+
         # Create song
         Song.objects.create(
             title=title,

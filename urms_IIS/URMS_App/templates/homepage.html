@@ -48,7 +48,7 @@
     flex-direction: column;
     background-color: #c3c3c3;
     border-radius: 10px;
-    width: 15%;
+    width: 18%;
 }
 
 .lineup-item img {
@@ -158,12 +158,12 @@
             {% if song.album_art_url %}
                 <img src="{{ song.album_art_url }}">
             {% endif %}
-            <div class="lineup-bottom">
+            <div class="lineup-bottom" style="padding: 5px; color: 1em;">
             <div class="lineup-button-top">
                 <strong>{{ song.title }} </strong>by {{ song.artist.name }}
             </div>
-            <div class="lineup-button">
-                <a href="{% url 'rate_song' song.id %}" class="btn" style="background-color: #252525; color: #ffffff; width: 30%;"><strong>Rate</strong></a>
+            <div class="lineup-button" >
+                <a href="{% url 'rate_song' song.id %}" class="btn" style="background-color: #252525; color: #ffffff; width: 30%; padding: 5px; size: 1em;"><strong>Rate</strong></a>
             </div>
             </div>
         </div>
@@ -174,10 +174,8 @@
     {% endif %}
     </div>
     
-
-
-    
 {% endblock %}
 </div>
+
 </body>
 </html>

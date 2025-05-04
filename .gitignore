@@ -1,3 +1,7 @@
 venv/
 __pycache__/
 *.py[cod]
+urms_IIS/.cache
+urms_IIS/.DS_Store
+urms_IIS/db.sqlite3
+urms_IIS/db.sqlite3
