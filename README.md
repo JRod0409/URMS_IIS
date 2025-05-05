@@ -7,8 +7,8 @@ URMS is a user-rated-music-site where users rate and add songs to find objective
 - [Deployment](#Deployment)
 - [User Examples](#User-Examples)
 - [Home page usage](#Home-page-usage)
-- [Browse page usage](#Home-page-usage)
-- [Profile page usage](#Home-page-usage)
+- [Browse page usage](#Browse-page-usage)
+- [Profile page usage](#Profile-page-usage)
 
 ## Dependencies
 
@@ -52,11 +52,38 @@ The following are some brief examples of how the user is able to interact with t
 
 ### Home page usage:
 
-![App Screenshot 1](https://keyboardmechanic.com/img/website-screenshot-1.png)
+![Homepage](https://keyboardmechanic.com/img/website-screenshot-1.png)
 
-The nav bar has three options: home, browse, profile and login/logout.
+**The nav bar has three options: home, browse, profile and login/logout.**
 
 When you click home, the home page features a hero section that displays the top song of the week. This is determined user ratings during the week of viewing, and users have the option to rate it to see if the rating is fair. After this is the top artists of the week section. 
 
-This section draws three of the most popular artists by finding the average score of their music.
+This display only section draws the three most popular artists by finding the average score of their music.
 
+![Random song lineup](https://keyboardmechanic.com/img/random-song-lineup.png)
+
+The random song lineup section picks five random songs from the database 100% indiscriminately. Using the combination of homepage sections, users will always be able to interact with the key features of the site.
+
+### Browse page usage:
+
+![Browse](https://keyboardmechanic.com/img/website-screenshot-2.png)
+
+**The browse section is designed to find specific songs the user is looking for.**
+
+Use the sort by dropdown to sort results by Title, Artist, Genre, Score, Releasedate. The user can then rate using the rate button next to each song.
+
+![Browse2](https://keyboardmechanic.com/img/music-section.png)
+
+Access the detail menu for any song in the browser by clicking the item.
+
+### Profile page usage:
+
+![Profile](https://keyboardmechanic.com/img/profile-1.png)
+
+**The key usage of this section other than editing your email is to add a song.**
+
+![Profile2](https://keyboardmechanic.com/img/profile-2.png)
+
+You add a song by pasting the song link and clicking add song. You can find the song link of any track on Spotify by finding your song → clicking the three dots → share → copy song link.
+
+**This concludes the core user features of the site.**
